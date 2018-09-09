@@ -1,6 +1,7 @@
 package com.jacx.validate;
 
 import com.jacx.properties.SecurityProperties;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.request.ServletWebRequest;
 
@@ -13,6 +14,7 @@ import java.util.Random;
  * @date 2018/09/09
  */
 @SuppressWarnings("unused")
+@Component
 public class ImageValidateCodeGeneratorImpl implements ValidateCodeGenerator {
     private SecurityProperties securityProperties;
 

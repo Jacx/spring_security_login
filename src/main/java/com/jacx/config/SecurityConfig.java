@@ -1,6 +1,8 @@
 package com.jacx.config;
 
+import com.jacx.filter.ValidateCodeFilter;
 import com.jacx.properties.SecurityProperties;
+import com.jacx.smsAuthentication.SmsSecurityConfig;
 import com.jacx.validate.ImageValidateCodeGeneratorImpl;
 import com.jacx.validate.ValidateCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.sql.DataSource;
 
@@ -37,16 +38,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationFailureHandler kobeAuthenticationFailureHandler;
     @Autowired
-    private OncePerRequestFilter imageValidateCodeFilter;
+    private ValidateCodeFilter validateCodeFilter;
     @Autowired
     private DataSource dataSource;
     @Autowired
     private UserDetailsService kobeUserDetailServiceImpl;
+    @Autowired
+    private SmsSecurityConfig smsSecurityConfig;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(imageValidateCodeFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin().loginPage("/authentication/require").loginProcessingUrl("/login")
+        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin().loginPage("/authentication/require").loginProcessingUrl("/authentication/form")
                 .successHandler(kobeAuthenticationSuccessHandler)
                 .failureHandler(kobeAuthenticationFailureHandler)
                 .and()
@@ -57,9 +60,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .userDetailsService(kobeUserDetailServiceImpl)
                 .and()
                 .authorizeRequests()
-                .antMatchers(securityProperties.getDef().getLoginPage(), "/authentication/require", "/code/image").permitAll()
+                .antMatchers(securityProperties.getDef().getLoginPage(), "/authentication/require", "/code/*").permitAll()
                 .anyRequest().authenticated()
-                .and().csrf().disable();
+                .and().csrf().disable()
+                .apply(smsSecurityConfig);
     }
 
     @Bean
@@ -81,4 +85,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        jdbcTokenRepository.setCreateTableOnStartup(true);
         return jdbcTokenRepository;
     }
+
+
 }

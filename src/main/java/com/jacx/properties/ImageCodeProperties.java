@@ -12,10 +12,12 @@ import lombok.Setter;
 @SuppressWarnings("unused")
 @Getter
 @Setter
-public class ImageCodeProperties {
-    private int width=100;
-    private int height=23;
-    private int length=6;
-    private int expireIn=60;
-    private String urls;
+public class ImageCodeProperties extends ValidateCodeProperties {
+    public ImageCodeProperties() {
+        setLength(4);
+    }
+
+    private int width = 100;
+    private int height = 23;
+
 }

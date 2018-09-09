@@ -18,5 +18,6 @@ import org.springframework.stereotype.Component;
 @Getter
 public class SecurityProperties {
     private ImageCodeProperties image = new ImageCodeProperties();
+    private ValidateCodeProperties valid = new ValidateCodeProperties();
     private DefaultProperties def = new DefaultProperties();
 }
